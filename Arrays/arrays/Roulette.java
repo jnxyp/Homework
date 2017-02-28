@@ -1,4 +1,4 @@
-package homework;
+package arrays;
 
 import java.awt.Color;
 import java.awt.Dimension;

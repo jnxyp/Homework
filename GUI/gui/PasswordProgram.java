@@ -1,4 +1,4 @@
-package homework;
+package gui;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;

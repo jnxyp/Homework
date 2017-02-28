@@ -1,4 +1,4 @@
-package homework;
+package gui;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -141,7 +141,7 @@ public class TicTacToe extends JFrame {
     else if (v[2] == v[4] && v[4] == v[6]) {
       win = v[2];
     }
-    // â†‘ It's stupid but I don't want to change it......
+    // â†? It's stupid but I don't want to change it......
     // Three possible cases
     if (win == 0 && empty == 0) {
       JOptionPane.showConfirmDialog(this, "It's a tie!", "Tie", JOptionPane.CLOSED_OPTION,

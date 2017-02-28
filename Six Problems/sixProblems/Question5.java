@@ -1,3 +1,4 @@
+package sixProblems;
 import java.util.Arrays;
 
 /**

@@ -1,3 +1,4 @@
+package sixProblems;
 /**
  * <p>
  * <b>Six Problems: Question 1<b> <br />
