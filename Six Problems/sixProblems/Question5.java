@@ -5,6 +5,7 @@ import java.util.Arrays;
 /**
  * <p>
  * <b>Six Problems: Question 5<b> <br />
+ * NOT FINISH YET, There's still some problem with this algorithm.
  * </p>
  * 
  * @author Xin <a href= "http://blog.jnxyp.tk/">(Jn_xyp)</a>

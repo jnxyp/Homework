@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -42,7 +43,6 @@ public class NHLTeams extends JFrame implements ActionListener {
       "Edmonton Oilers", "Los Angeles Kings", "San Jose Sharks", "Vancouver Canucks" };
 
   public static void main(String[] args) {
-
     new NHLTeams();
   }
 
@@ -69,7 +69,6 @@ public class NHLTeams extends JFrame implements ActionListener {
     btnWestD.setPreferredSize(new Dimension(85, 30));
     btnWestD.setFont(f);
     btnWestD.addActionListener(this);
-    // Not using yet
     btnSearchEast = new JButton("SEARCH");
     btnSearchEast.setFont(f);
     btnSearchEast.setEnabled(false);
@@ -132,9 +131,10 @@ public class NHLTeams extends JFrame implements ActionListener {
     panel.add(btnSearchEast, gc);
     gc.gridx = 2;
     panel.add(btnSearchWest, gc);
-    // Set visible
+    // Print teams
     printEast();
     printWest();
+    // Set visible
     setContentPane(panel);
     pack();
     setTitle("National Hockey League");
@@ -146,24 +146,74 @@ public class NHLTeams extends JFrame implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == btnEastA) {
+    Object s = e.getSource();
+    String keyWord = "";
+    int line = 0;
+    int pos = 0;
+    // ASCEND button for east teams
+    if (s == btnEastA) {
       Arrays.sort(eastTeams);
       printEast();
+      btnSearchEast.setEnabled(true);
     }
-    else if (e.getSource() == btnEastD) {
+    // DECEND button for east teams
+    else if (s == btnEastD) {
       Arrays.sort(eastTeams, Collections.reverseOrder());
       printEast();
+      btnSearchEast.setEnabled(false);
     }
-    else if (e.getSource() == btnWestA) {
+    // ASCEND button for west teams
+    else if (s == btnWestA) {
       Arrays.sort(westTeams);
       printWest();
+      btnSearchWest.setEnabled(true);
     }
-    else if (e.getSource() == btnWestD) {
+    // DECEND button for west teams
+    else if (s == btnWestD) {
       Arrays.sort(westTeams, Collections.reverseOrder());
       printWest();
+      btnSearchWest.setEnabled(false);
+    }
+    // SEARCH actions
+    // East teams
+    else if (s == btnSearchEast) {
+      keyWord = JOptionPane.showInputDialog(null, "Enter team from Eastern COnference:", "NHL Teams",
+          JOptionPane.INFORMATION_MESSAGE);
+      line = Arrays.binarySearch(eastTeams, keyWord);
+      if (line > 0) {
+        JOptionPane.showMessageDialog(null, keyWord + " was found!", "Team found!", JOptionPane.INFORMATION_MESSAGE);
+        for (int i = 0; i < line; i++) {
+          // Add all the lengths of the names on front, +1 for "\n"
+          pos += eastTeams[i].length() + 1;
+        }
+        eastTxtArea.requestFocus();
+        eastTxtArea.select(pos, pos + eastTeams[line].length());
+      }
+      else {
+        JOptionPane.showMessageDialog(null, keyWord + " was not found!", "Team not found!", JOptionPane.ERROR_MESSAGE);
+      }
+    }
+    // West teams
+    else if (s == btnSearchWest) {
+      keyWord = JOptionPane.showInputDialog(null, "Enter team from Western COnference:", "NHL Teams",
+          JOptionPane.INFORMATION_MESSAGE);
+      line = Arrays.binarySearch(westTeams, keyWord);
+      if (line > 0) {
+        JOptionPane.showMessageDialog(null, keyWord + " was found!", "Team found!", JOptionPane.INFORMATION_MESSAGE);
+        for (int i = 0; i < line; i++) {
+          // Add all the lengths of the names on front, +1 for "\n"
+          pos += westTeams[i].length() + 1;
+        }
+        westTxtArea.requestFocus();
+        westTxtArea.select(pos, pos + westTeams[line].length());
+      }
+      else {
+        JOptionPane.showMessageDialog(null, keyWord + " was not found!", "Team not found!", JOptionPane.ERROR_MESSAGE);
+      }
     }
   }
 
+  // This two method will update the team names in text area.
   private void printEast() {
     eastTxtArea.setText(null);
     for (String x : eastTeams) {

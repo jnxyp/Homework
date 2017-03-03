@@ -1,5 +1,6 @@
 package arrays;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -17,6 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 /**
  * <p>
@@ -129,13 +134,19 @@ public class SalaryGenerator extends JFrame implements ActionListener {
       btnAscend.setEnabled(true);
       btnDescend.setEnabled(true);
     }
+    // ASCEND Button
     else if (e.getSource() == btnAscend) {
       Arrays.sort(salaries);
       printSalaries();
     }
+    // DESCEND Button
     else if (e.getSource() == btnDescend) {
       Arrays.sort(salaries, Collections.reverseOrder());
       printSalaries();
+    }
+    // SEARCH Button
+    else if (e.getSource() == btnSearch) {
+
     }
   }
 
@@ -165,5 +176,31 @@ public class SalaryGenerator extends JFrame implements ActionListener {
       txtArea.append(String.format("%-8s%8s%n", count, decFmt.format(salary)));
       count++;
     }
+  }
+
+  private Object highlightThatLine(int pos) {
+    String txt = txtArea.getText();
+    int start = 0, end = txt.length();
+    for (int i = pos; i >= 0; i--) {
+      if (txt.charAt(i) == '\n') {
+        start = i;
+        break;
+      }
+    }
+    for (int i = pos; i < txt.length(); i++) {
+      if (txt.charAt(i) == '\n') {
+        end = i + 1;
+        break;
+      }
+    }
+    Highlighter highlighter = txtArea.getHighlighter();
+    HighlightPainter hPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
+    try {
+      return highlighter.addHighlight(start, end, hPainter);
+    }
+    catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }

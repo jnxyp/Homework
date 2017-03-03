@@ -17,7 +17,8 @@ import javax.swing.JTextField;
  */
 public class WordFinder extends JFrame {
   JTextField[][] blocks;
-  JTextField     txtFldRow, txtFldCol, txtFldWord;
+
+  JTextField txtFldRow, txtFldCol, txtFldWord;
 
   Font f = new Font("Consolas", Font.PLAIN, 12);
 
