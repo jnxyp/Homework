@@ -36,7 +36,7 @@ public class SalaryGenerator extends JFrame implements ActionListener {
   private final double MIN_SALARY = 8.00;
   private final double MAX_SALARY = 15.00;
 
-  private JButton     btnAscend, btnDescend, btnGenerate, btnSearch;
+  private JButton     btnAscend, btnDescend, btnGenerate, btnSearch, btnClear;
   private JLabel      lblTitle;
   private JPanel      buttonPanel, panel;
   private JScrollPane txtSclPane;
@@ -59,9 +59,9 @@ public class SalaryGenerator extends JFrame implements ActionListener {
     lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
     // Create button panel
     buttonPanel = new JPanel();
-    buttonPanel.setLayout(new GridLayout(4, 1, 5, 5));
+    buttonPanel.setLayout(new GridLayout(5, 1, 5, 5));
     // Determine button size
-    Dimension d = new Dimension(100, 30);
+    Dimension d = new Dimension(100, 25);
     // Create buttons
     btnGenerate = new JButton("GENERATE");
     btnGenerate.setPreferredSize(d);
@@ -78,11 +78,16 @@ public class SalaryGenerator extends JFrame implements ActionListener {
     btnSearch.setPreferredSize(d);
     btnSearch.setEnabled(false);
     btnSearch.addActionListener(this);
+    btnClear = new JButton("CLEAR");
+    btnClear.setPreferredSize(d);
+    btnClear.setEnabled(false);
+    btnClear.addActionListener(this);
     // Add buttons
     buttonPanel.add(btnGenerate);
     buttonPanel.add(btnAscend);
     buttonPanel.add(btnDescend);
     buttonPanel.add(btnSearch);
+    buttonPanel.add(btnClear);
     // Create text area and scroll pane
     txtSclPane = new JScrollPane(txtArea = new JTextArea(10, 16), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -99,7 +104,7 @@ public class SalaryGenerator extends JFrame implements ActionListener {
     setSize(300, 270);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    setResizable(false);
+    // setResizable(false);
     setVisible(true);
   }
 
@@ -107,32 +112,36 @@ public class SalaryGenerator extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     // GENERATE button
     if (e.getSource() == btnGenerate) {
-      btnGenerate.setEnabled(false);
       boolean isInvalid;
       String input;
       int num = 0;
       // Ask user for number of employees
-      do {
-        isInvalid = false;
-        input = JOptionPane.showInputDialog(null, "Enter number of employees:", "Salary Generator",
-            JOptionPane.QUESTION_MESSAGE);
-        try {
-          num = Integer.parseInt(input);
-        }
-        catch (NumberFormatException err) {
-          isInvalid = true;
-        }
-        if (num <= 0) {
-          isInvalid = true;
-        }
-        if (isInvalid) {
-          JOptionPane.showMessageDialog(null, "Please enter a positive integer!");
-        }
-      } while (isInvalid);
+      isInvalid = false;
+      input = JOptionPane.showInputDialog(this, "Enter number of employees:", "Salary Generator",
+          JOptionPane.QUESTION_MESSAGE);
+      try {
+        num = Integer.parseInt(input);
+      }
+      catch (NumberFormatException err) {
+        isInvalid = true;
+      }
+      if (num <= 0) {
+        isInvalid = true;
+      }
+      if (isInvalid) {
+        JOptionPane.showMessageDialog(this, "Please enter a positive integer!", "Salary Generator",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
       generateSalaries(num);
       printSalaries();
+
+      btnGenerate.setEnabled(false);
       btnAscend.setEnabled(true);
       btnDescend.setEnabled(true);
+      btnSearch.setEnabled(true);
+      btnClear.setEnabled(true);
     }
     // ASCEND Button
     else if (e.getSource() == btnAscend) {
@@ -146,7 +155,44 @@ public class SalaryGenerator extends JFrame implements ActionListener {
     }
     // SEARCH Button
     else if (e.getSource() == btnSearch) {
+      String txt = txtArea.getText();
+      // Ask for input
+      String key = JOptionPane.showInputDialog(this, "Enter a wage($):", "Salary Generator",
+          JOptionPane.INFORMATION_MESSAGE);
+      try {
+        key = decFmt.format(Double.parseDouble(key)); // "14.5" --> "14.50$"
+      }
+      catch (NumberFormatException err) {
+        JOptionPane.showMessageDialog(this, "Invalid Input! Please enter a positive decimal!", "Salary Generator",
+            JOptionPane.ERROR_MESSAGE);
+        return;
+      }
 
+      int count = 0, index = 0;
+      while (index != -1) {
+        index = txt.indexOf(key, index + key.length());
+        if (index != -1) {
+          highlightThatLine(index);
+          count++;
+        }
+      }
+      if (count == 0) {
+        JOptionPane.showMessageDialog(this, "Cannot found any employee who earn " + key + "/hour!", "Salary Generator",
+            JOptionPane.ERROR_MESSAGE);
+      }
+      else {
+        JOptionPane.showMessageDialog(this, "There are " + count + " employee(s) who earn " + key + "/hour!",
+            "Salary Generator", JOptionPane.WARNING_MESSAGE);
+      }
+    }
+    else if (e.getSource() == btnClear) {
+      txtArea.setText(null);
+      Arrays.fill(salaries, 0.0);
+      btnGenerate.setEnabled(true);
+      btnAscend.setEnabled(false);
+      btnDescend.setEnabled(false);
+      btnSearch.setEnabled(false);
+      btnClear.setEnabled(false);
     }
   }
 
@@ -178,21 +224,31 @@ public class SalaryGenerator extends JFrame implements ActionListener {
     }
   }
 
+  /**
+   * This method can add a highlighter to the entire line of the input position.
+   * 
+   * @param pos
+   *          a position in the line that need to be highlighted.
+   * @return the reference to that line.
+   */
   private Object highlightThatLine(int pos) {
     String txt = txtArea.getText();
     int start = 0, end = txt.length();
+    // Look forward for the beginning of this line
     for (int i = pos; i >= 0; i--) {
       if (txt.charAt(i) == '\n') {
         start = i;
         break;
       }
     }
+    // Look downward for the end of this line
     for (int i = pos; i < txt.length(); i++) {
       if (txt.charAt(i) == '\n') {
         end = i + 1;
         break;
       }
     }
+    // Set highlighter
     Highlighter highlighter = txtArea.getHighlighter();
     HighlightPainter hPainter = new DefaultHighlighter.DefaultHighlightPainter(Color.LIGHT_GRAY);
     try {
