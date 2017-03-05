@@ -2,7 +2,7 @@ package search;
 
 import java.util.Arrays;
 
-public class BinarySearch {
+public class CodingBinarySearch {
   public static void main(String[] args) {
     int[] input = { 1, 2, 3, 4, 5, 6 };
     System.out.println(binarySearch(input, 6)); // 5
@@ -50,7 +50,8 @@ public class BinarySearch {
       else if (str1.charAt(i) < str2.charAt(i)) {
         return -1;
       }
-      else if (str1.charAt(i) == str2.charAt(i) && str1.length() == str2.length()) {
+      else if (str1.charAt(i) == str2.charAt(i) && str1.length() == str2.length()
+          && i == Math.min(str1.length(), str2.length()) - 2) {
         return 0;
       }
     }
