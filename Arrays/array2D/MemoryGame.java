@@ -10,6 +10,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -37,9 +39,15 @@ import javax.swing.border.Border;
  * Rename image file as "MemoryGame * .png" and add to resource folder to add
  * images for the game.
  * </p>
+ * <p>
+ * <b>How to cheat:</b><br/>
+ * <b>←</b> -1 s<br/>
+ * <b>→</b> +1 s<br/>
+ * <b>↑</b> delay -100 ms<br/>
+ * <b>↓</b> delay +100 ms<br/>
  * 
  * @author Xin <a href= "http://blog.jnxyp.tk/">(Jn_xyp)</a>
- * @version 2017-03-08
+ * @version 2017-03-10
  */
 public class MemoryGame extends JFrame implements ActionListener {
   // Program Setting
@@ -50,13 +58,14 @@ public class MemoryGame extends JFrame implements ActionListener {
   private JLabel  lblTimer, lblTime, lblTitle;
   private JButton btnStart;
   // Listeners and Timer
-  private ClickListener clickListener;
-  private FrameListener frameListener;
-  private Timer         timer;
+  private ClickListener      clickListener;
+  private FrameListener      frameListener;
+  private Timer              timer;
+  private GridBagConstraints gBC = new GridBagConstraints();
   // GUI Variables
-  private Dimension          frameSize  = new Dimension(740, 670), timerSize = new Dimension(150, 25);
-  private GridBagConstraints gBC        = new GridBagConstraints();
-  private final Border       cardBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
+  private Dimension    frameSize  = new Dimension(740, 670);
+  private Dimension    timerSize  = new Dimension(150, 25);
+  private final Border cardBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1);
   // Storage Arrays
   private ImageIcon[] imgs;
   private Card[][]    cards;
@@ -142,9 +151,10 @@ public class MemoryGame extends JFrame implements ActionListener {
     panel.add(lblTimer, gBC);
     // Set frame properties
     addWindowListener(frameListener);
+    addKeyListener(new CheatEngine());
     setContentPane(panel);
     setSize(frameSize);
-    setResizable(false);
+    // setResizable(false);
     setTitle("Memory Game");
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setLocationRelativeTo(null);
@@ -454,9 +464,37 @@ public class MemoryGame extends JFrame implements ActionListener {
       if (card1 == null) {
         card1 = card;
       }
-      else if (card2 == null) {
+      else if (card2 == null && card != card1) {
         card2 = card;
         checkIfMatch();
+      }
+    }
+  }
+
+  private class CheatEngine extends KeyAdapter {
+    @Override
+    public void keyPressed(KeyEvent e) {
+      if (e.getKeyCode() == KeyEvent.VK_LEFT && gameRunning) {
+        second--;
+        lblTimer.setText(timeFormat(second));
+        System.out.println("Time -1s");
+      }
+      else if (e.getKeyCode() == KeyEvent.VK_RIGHT && gameRunning) {
+        second++;
+        lblTimer.setText(timeFormat(second));
+        System.out.println("Time +1s");
+      }
+      else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+        if (timer.getDelay() < 5000) {
+          timer.setDelay(timer.getDelay() + 100);
+        }
+        System.out.println("Current Delay: " + timer.getDelay() + " ms");
+      }
+      else if (e.getKeyCode() == KeyEvent.VK_UP) {
+        if (timer.getDelay() >= 100) {
+          timer.setDelay(timer.getDelay() - 100);
+        }
+        System.out.println("Current Delay: " + timer.getDelay() + " ms");
       }
     }
   }
