@@ -42,7 +42,7 @@ import javax.swing.JScrollPane;
  * "1cent.png" --> "0.01d.png"<br/>
  * 
  * @author Xin <a href= "http://blog.jnxyp.tk/">(Jn_xyp)</a>
- * @version 2017-03-27
+ * @version 2017-03-31
  */
 public class DealOrNoDeal extends JFrame {
   // Constants
@@ -281,9 +281,15 @@ public class DealOrNoDeal extends JFrame {
         caseCount++;
       }
     }
+    // Add selected case
+    caseCount++;
+    sum += selectedCase.value;
+    // System.out.println("Remain Cases: " + caseCount);
+    // System.out.println("Total Money: " + sum);
+    // System.out.println("Round Count: " + roundCount);
+    // System.out.println();
     // Banker’s offer = Average value of the money remaining * round number / 10
-    // Keep two decimals
-    return ((int) (sum / caseCount * roundCount / 10 * 100)) / 100;
+    return (sum / caseCount * roundCount / 10);
   }
 
   /**
